@@ -62,8 +62,10 @@ class Game():
         self.boxScore = {self.teams[1]: tables[1], self.teams[0]: tables[0]}
 
         # Properly format starters' names for each team
-        self.starters = {team:[" ".join(player.split(', ')[::-1]) for player in self.boxScore[team].loc[self.boxScore[team].GS==1,'Name'].tolist()[:-1]] \
-                         for team in self.teams}
+        self.set_starters()
+
+        # Method for getting starters when `GS` column is in box score (it was prior to 2024-25 season)
+        #self.starters = {team:[" ".join(player.split(', ')[::-1]) for player in self.boxScore[team].loc[self.boxScore[team].GS==1,'Name'].tolist()[:-1]] for team in self.teams}
     
     def load_pbp(self):
         self.pbp = PbpLoader(self._sourceData['pbp'], self.teams, self.starters)
@@ -90,6 +92,29 @@ class Game():
         shots.reset_index(drop=True,inplace=True)
 
         self.shotChart = shots
+    
+    def set_starters(self):
+        q1pbp = [quarter for quarter in pd.read_html(StringIO(self._sourceData['pbp']), header=0) if 'Time' in quarter.columns][0]
+        self.starters = {}
+        for i, team in enumerate(self.teams):
+            col = 1 if i==0 else -1
+            teamCol = q1pbp.loc[:, q1pbp.columns[col]].fillna('None')
+            playerEvents = teamCol.loc[teamCol.str.contains(',') & ~teamCol.str.contains('Team,')]
+            names = playerEvents.apply(lambda x: x.split(',')[0])
+            starters = names.unique().tolist()
+            subsIn = playerEvents.loc[playerEvents.str.contains('substitution in')]
+            guaranteedStarters = names.loc[playerEvents.loc[:subsIn.index[0]-1].index].unique().tolist()
+            nonStarters = names.loc[subsIn.index].unique().tolist()
+            for starter in guaranteedStarters:
+                try:
+                    nonStarters.remove(starter)
+                except ValueError:
+                    pass
+            
+            for sub in nonStarters:
+                if len(starters) > 5:
+                    starters.remove(sub)
+            self.starters[team] = starters
    
     def _save_data_to_file(self):
         if os.path.isdir('D:/DataDirectory/Game'):

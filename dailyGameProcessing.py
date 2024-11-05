@@ -19,7 +19,7 @@ d1Teams = pd.read_csv("./Data/ncaa_synergy_id_names_map_2024_2025.csv").ncaaName
 
 allGames = pd.read_csv(f"games_{season-1}_{season}.csv", parse_dates=['date'])
 # Comment out this line on the first day, then uncomment
-allGames['date'] = allGames['date'].dt.date
+#allGames['date'] = allGames['date'].dt.date
 
 allPbp = pd.read_csv(f"pbp_{season-1}_{season}.csv")
 
@@ -37,7 +37,7 @@ class Day():
         if r.status_code != 200:
             raise Exception(f"Request for {date} was not successful")
         else:
-            soup = BeautifulSoup(r.text)
+            soup = BeautifulSoup(r.text, parser='lxml')
         teamTags = soup.find_all('td', attrs={'class':'opponents_min_width'})
         gameIds = [tag['href'] for tag in soup.find_all('a', string='Box Score')]
         gameIds = [link.split('/')[2] for link in gameIds]
@@ -205,7 +205,7 @@ class Day():
         teams_dict[teams[0]]['poss'][1] += possessions[1]
 
     @staticmethod
-    def adjustReb(teams: list, rebounds: list, possessions: list, reb_dict, nationalAverage=0.30, tol=0.0001):
+    def adjustReb(teams: list, rebounds: list, possessions: list, reb_dict, nationalAverage=0.31, tol=0.0001):
         poss1 = reb_dict[teams[0]]['poss']
         poss2 = reb_dict[teams[1]]['poss']
 
@@ -258,8 +258,9 @@ class Day():
         reb_dict[teams[0]]['poss'][1] += possessions[1]
 
 today = datetime.date.today()
-dateList = [seasonStartDate + datetime.timedelta(days=x) for x in range((today - seasonStartDate).days + 1)]
+dateList = [seasonStartDate + datetime.timedelta(days=x) for x in range((today - seasonStartDate).days)]
 dateList = [d for d in dateList if d not in allGames.date.unique()]
+print(dateList)
 
 for date in dateList:
     print(date)

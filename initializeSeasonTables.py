@@ -1,18 +1,18 @@
 import pandas as pd
 
-d1Teams = pd.read_csv("./Data/ncaa_synergy_id_names_map_2023_2024.csv").ncaaID.tolist()
+d1Teams = pd.read_csv("./Data/ncaa_synergy_id_names_map_2024_2025.csv").ncaaId25.tolist()
 
 schedule = pd.DataFrame(columns=['teamName1', 'teamId1', 'teamName2', 'teamId2', 'gameId', 'date'])
 schedule.to_csv("games_2024_2025.csv", index=False)
 
 teamBox = pd.DataFrame(columns=['Name', 'MP', 'GS', 'FGM', 'FGA', '3FG', '3FGA', 'FT', 'FTA',
        'PTS', 'ORebs', 'DRebs', 'Tot Reb', 'AST', 'TO', 'STL', 'BLK', 'PF',
-       'DQ', 'Tech Fouls', 'Team ID', 'Opponent ID', 'Game ID'])
+       'DQ', 'Tech Fouls', 'teamId', 'opponentId', 'gameId'])
 teamBox.to_csv("team_box_scores_2024_2025.csv", index=False)
 
 playerBox = pd.DataFrame(columns=['#', 'Name', 'P', 'MP', 'GS', 'FGM', 'FGA', '3FG', '3FGA', 'FT', 'FTA',
        'PTS', 'ORebs', 'DRebs', 'Tot Reb', 'AST', 'TO', 'STL', 'BLK', 'PF',
-       'DQ', 'Tech Fouls', 'Team ID', 'Opponent ID', 'Game ID'])
+       'DQ', 'Tech Fouls', 'teamId', 'opponentId', 'gameId'])
 playerBox.to_csv("player_box_scores_2024_2025.csv", index=False)
 
 playerPossessionData = pd.DataFrame(columns=[ 'poss', 1,   -1,   2,  -2,   3,   -3,   4,  -4,   5,   -5,   6,  -6,   7,  -7,
