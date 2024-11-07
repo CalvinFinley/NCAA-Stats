@@ -19,7 +19,7 @@ d1Teams = pd.read_csv("./Data/ncaa_synergy_id_names_map_2024_2025.csv").ncaaName
 
 allGames = pd.read_csv(f"games_{season-1}_{season}.csv", parse_dates=['date'])
 # Comment out this line on the first day, then uncomment
-#allGames['date'] = allGames['date'].dt.date
+allGames['date'] = allGames['date'].dt.date
 
 allPbp = pd.read_csv(f"pbp_{season-1}_{season}.csv")
 
